@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/invopop/jsonschema"
@@ -26,4 +28,15 @@ func GenerateSchema[T any]() anthropic.ToolInputSchemaParam {
 	return anthropic.ToolInputSchemaParam{
 		Properties: schema.Properties,
 	}
+}
+
+// ValidatePath returns an error if `path` is not allowed to be read
+func ValidatePath(path string) error {
+	illegalPrefixes := []string{"/", ".."}
+	for _, prefix := range illegalPrefixes {
+		if strings.HasPrefix(path, prefix) {
+			return fmt.Errorf("illegal prefix: %s", prefix)
+		}
+	}
+	return nil
 }

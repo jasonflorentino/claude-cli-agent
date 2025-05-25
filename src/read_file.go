@@ -2,10 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"os"
-	"strings"
 )
 
 var ReadFileDefinition = ToolDefinition{
@@ -28,11 +25,8 @@ func ReadFile(input json.RawMessage) (string, error) {
 		panic(err)
 	}
 
-	illegalPrefixes := []string{"/", ".."}
-	for _, prefix := range illegalPrefixes {
-		if strings.HasPrefix(readFileInput.Path, prefix) {
-			return "", errors.New(fmt.Sprintf("illegal prefix: %s", prefix))
-		}
+	if err := ValidatePath(readFileInput.Path); err != nil {
+		return "", err
 	}
 
 	content, err := os.ReadFile(readFileInput.Path)
