@@ -35,6 +35,7 @@ func (a *Agent) Run(ctx context.Context) error {
 	readUserInput := true
 	for {
 		if readUserInput {
+			fmt.Printf("\n\u001b[94m==== %s\u001b[0m", time.Now().Format("2006-01-02 15:04:05"))
 			fmt.Print("\n\u001b[94mYou\u001b[0m: ")
 			userInput, ok := a.getUserMessage()
 			if !ok {
@@ -45,7 +46,7 @@ func (a *Agent) Run(ctx context.Context) error {
 			conversation = append(conversation, userMessage)
 		}
 
-		fmt.Print("\u001b[2mSending...\u001b[0m")
+		fmt.Print("\n\u001b[2mSending...\u001b[0m")
 		timeStart := time.Now()
 		message, err := a.runInference(ctx, conversation)
 		if err != nil {
@@ -60,7 +61,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		for _, content := range message.Content {
 			switch content.Type {
 			case "text":
-				fmt.Printf("\u001b[93mClaude\u001b[0m: %s\n", content.Text)
+				fmt.Printf("\n\u001b[93mClaude\u001b[0m: %s\n", content.Text)
 			case "tool_use":
 				result := a.executeTool(content.ID, content.Name, content.Input)
 				toolResults = append(toolResults, result)
@@ -115,7 +116,7 @@ func (a *Agent) executeTool(id, name string, input json.RawMessage) anthropic.Co
 		return anthropic.NewToolResultBlock(id, "tool not found", true)
 	}
 
-	fmt.Printf("\u001b[92mtool\u001b[0m: %s(%s)\n", name, input)
+	fmt.Printf("\n\u001b[92mtool\u001b[0m: %s(%s)\n", name, input)
 	response, err := toolDef.Function(input)
 	if err != nil {
 		return anthropic.NewToolResultBlock(id, err.Error(), true)
