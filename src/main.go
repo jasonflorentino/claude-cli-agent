@@ -10,10 +10,22 @@ import (
 	"github.com/anthropics/anthropic-sdk-go/option"
 )
 
+var Model = anthropic.ModelClaude3_7SonnetLatest
+
 func main() {
 	if err := LoadEnv(); err != nil {
 		fmt.Printf("Error loading .env: %v\n", err)
 		os.Exit(1)
+	}
+
+	if len(os.Args) > 1 {
+		for _, arg := range os.Args[1:] {
+			// fmt.Printf("Arg %d: %s\n", i+1, arg)
+			if arg == "haiku" {
+				fmt.Println("Using Haiku 3.5")
+				Model = anthropic.ModelClaude3_5HaikuLatest
+			}
+		}
 	}
 
 	client := anthropic.NewClient(
@@ -33,57 +45,4 @@ func main() {
 	if err != nil {
 		fmt.Printf("error: %s\n", err.Error())
 	}
-}
-
-func NewAgent(client *anthropic.Client, getUserMessage func() (string, bool)) *Agent {
-	return &Agent{
-		client:         client,
-		getUserMessage: getUserMessage,
-	}
-}
-
-type Agent struct {
-	client         *anthropic.Client
-	getUserMessage func() (string, bool)
-}
-
-func (a *Agent) Run(ctx context.Context) error {
-	conversation := []anthropic.MessageParam{}
-
-	fmt.Println("Chat with Claude (use 'ctrl-c' to quit)")
-
-	for {
-		fmt.Print("\u001b[94mYou\u001b[0m: ")
-		userInput, ok := a.getUserMessage()
-		if !ok {
-			break
-		}
-
-		userMessage := anthropic.NewUserMessage(anthropic.NewTextBlock(userInput))
-		conversation = append(conversation, userMessage)
-
-		message, err := a.runInference(ctx, conversation)
-		if err != nil {
-			return err
-		}
-		conversation = append(conversation, message.ToParam())
-
-		for _, content := range message.Content {
-			switch content.Type {
-			case "text":
-				fmt.Printf("\u001b[93mClaude\u001b[0m: %s\n", content.Text)
-			}
-		}
-	}
-
-	return nil
-}
-
-func (a *Agent) runInference(ctx context.Context, conversation []anthropic.MessageParam) (*anthropic.Message, error) {
-	message, err := a.client.Messages.New(ctx, anthropic.MessageNewParams{
-		Model:     anthropic.ModelClaude3_7SonnetLatest,
-		MaxTokens: int64(1024),
-		Messages:  conversation,
-	})
-	return message, err
 }

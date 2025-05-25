@@ -1,3 +1,7 @@
+# Claude Agent
+
+Started from following along with Thorsten Ball: https://ampcode.com/how-to-build-an-agent
+
 # Setup
 
 ```
