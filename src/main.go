@@ -40,7 +40,8 @@ func main() {
 		return scanner.Text(), true
 	}
 
-	agent := NewAgent(&client, getUserMessage)
+	tools := []ToolDefinition{ReadFileDefinition}
+	agent := NewAgent(&client, getUserMessage, tools)
 	err := agent.Run(context.TODO())
 	if err != nil {
 		fmt.Printf("error: %s\n", err.Error())
