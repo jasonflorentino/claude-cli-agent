@@ -6,9 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"github.com/anthropics/anthropic-sdk-go"
-	"github.com/invopop/jsonschema"
 )
 
 var ReadFileDefinition = ToolDefinition{
@@ -43,18 +40,4 @@ func ReadFile(input json.RawMessage) (string, error) {
 		return "", err
 	}
 	return string(content), nil
-}
-
-func GenerateSchema[T any]() anthropic.ToolInputSchemaParam {
-	reflector := jsonschema.Reflector{
-		AllowAdditionalProperties: false,
-		DoNotReference:            true,
-	}
-	var v T
-
-	schema := reflector.Reflect(v)
-
-	return anthropic.ToolInputSchemaParam{
-		Properties: schema.Properties,
-	}
 }
