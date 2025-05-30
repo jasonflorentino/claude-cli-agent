@@ -35,8 +35,8 @@ func (a *Agent) Run(ctx context.Context) error {
 	readUserInput := true
 	for {
 		if readUserInput {
-			fmt.Printf("\n\u001b[94m==== %s\u001b[0m", time.Now().Format("2006-01-02 15:04:05"))
-			fmt.Print("\n\u001b[94mYou\u001b[0m: ")
+			fmt.Printf(Blue("\n==== %s"), time.Now().Format("2006-01-02 15:04:05"))
+			fmt.Print(Blue("\nYou") + ": ")
 			userInput, ok := a.getUserMessage()
 			if !ok {
 				break
@@ -46,14 +46,14 @@ func (a *Agent) Run(ctx context.Context) error {
 			conversation = append(conversation, userMessage)
 		}
 
-		fmt.Print("\n\u001b[2mSending...\u001b[0m")
+		fmt.Print(Gray("\nSending..."))
 		timeStart := time.Now()
 		message, err := a.runInference(ctx, conversation)
 		if err != nil {
 			return err
 		}
 		duration := time.Since(timeStart)
-		fmt.Printf("\u001b[2m (%s)\u001b[0m\n", duration)
+		fmt.Printf(Gray(" (%s)\n"), duration.Truncate(time.Millisecond))
 
 		conversation = append(conversation, message.ToParam())
 
@@ -61,7 +61,7 @@ func (a *Agent) Run(ctx context.Context) error {
 		for _, content := range message.Content {
 			switch content.Type {
 			case "text":
-				fmt.Printf("\n\u001b[93mClaude\u001b[0m: %s\n", content.Text)
+				fmt.Printf(Yellow("\nClaude")+": %s\n", content.Text)
 			case "tool_use":
 				result := a.executeTool(content.ID, content.Name, content.Input)
 				toolResults = append(toolResults, result)
@@ -98,7 +98,7 @@ func (a *Agent) runInference(
 		MaxTokens: int64(1024),
 		Messages:  conversation,
 		System: []anthropic.TextBlockParam{
-			{Text: "Try to be brief!"},
+			{Text: "Be brief!"},
 		},
 		Tools: anthropicTools,
 	})
@@ -119,7 +119,7 @@ func (a *Agent) executeTool(id, name string, input json.RawMessage) anthropic.Co
 		return anthropic.NewToolResultBlock(id, "tool not found", true)
 	}
 
-	fmt.Printf("\n\u001b[92mtool\u001b[0m: %s(%s)\n", name, input)
+	fmt.Printf(Green("\ntool")+": %s(%s)\n", name, input)
 	response, err := toolDef.Function(input)
 	if err != nil {
 		return anthropic.NewToolResultBlock(id, err.Error(), true)
