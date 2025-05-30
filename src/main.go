@@ -13,6 +13,10 @@ import (
 var Model = anthropic.ModelClaude3_7SonnetLatest
 
 func main() {
+	if err := LoadIgnoredFiles(); err != nil {
+		fmt.Printf("Error loading ignored files: %v\n", err)
+		os.Exit(1)
+	}
 	if err := LoadEnv(); err != nil {
 		fmt.Printf("Error loading .env: %v\n", err)
 		os.Exit(1)
