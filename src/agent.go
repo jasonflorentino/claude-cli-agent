@@ -30,8 +30,6 @@ func NewAgent(
 func (a *Agent) Run(ctx context.Context) error {
 	conversation := []anthropic.MessageParam{}
 
-	fmt.Println("Chat with Claude (use 'ctrl-c' to quit)")
-
 	readUserInput := true
 	for {
 		if readUserInput {

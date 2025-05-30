@@ -26,7 +26,6 @@ func main() {
 		for _, arg := range os.Args[1:] {
 			// fmt.Printf("Arg %d: %s\n", i+1, arg)
 			if arg == "haiku" {
-				fmt.Println("Using Haiku 3.5")
 				Model = anthropic.ModelClaude3_5HaikuLatest
 			}
 		}
@@ -46,6 +45,10 @@ func main() {
 
 	tools := []ToolDefinition{ReadFileDefinition, ListFilesDefinition, EditFileDefinition}
 	agent := NewAgent(&client, getUserMessage, tools)
+
+	fmt.Println("Chat with Claude (use 'ctrl-c' to quit)")
+	fmt.Println(Gray("Model: " + string(Model)))
+
 	err := agent.Run(context.TODO())
 	if err != nil {
 		fmt.Printf("error: %s\n", err.Error())
