@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/anthropics/anthropic-sdk-go"
@@ -96,7 +97,7 @@ func (a *Agent) runInference(
 		MaxTokens: int64(1024),
 		Messages:  conversation,
 		System: []anthropic.TextBlockParam{
-			{Text: "Be brief!"},
+			{Text: os.Getenv("SYSTEM_PROMPT")},
 		},
 		Tools: anthropicTools,
 	})

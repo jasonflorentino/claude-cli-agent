@@ -25,7 +25,7 @@ func LoadEnv() error {
 		if !found {
 			continue
 		}
-		os.Setenv(key, value)
+		os.Setenv(key, strings.ReplaceAll(value, "\"", ""))
 	}
 
 	return scanner.Err()
