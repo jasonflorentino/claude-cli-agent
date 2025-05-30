@@ -97,7 +97,10 @@ func (a *Agent) runInference(
 		Model:     Model,
 		MaxTokens: int64(1024),
 		Messages:  conversation,
-		Tools:     anthropicTools,
+		System: []anthropic.TextBlockParam{
+			{Text: "Try to be brief!"},
+		},
+		Tools: anthropicTools,
 	})
 	return message, err
 }
