@@ -43,8 +43,6 @@ func ListFiles(input json.RawMessage) (string, error) {
 		if relPath != "." {
 			if info.IsDir() {
 				files = append(files, relPath+"/")
-			} else if IsFileIgnored(filepath.Base(relPath)) {
-				return nil
 			} else {
 				files = append(files, relPath)
 			}
